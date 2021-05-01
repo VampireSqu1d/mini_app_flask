@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>lista de libros</title>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="static/style.css" type="text/css">
+</head>
+<body>
+<div class="container">
+  <h2>Visualización de datos en íngles de libros</h2>
+  <hr>
+</div>
+<div>
+{% block content %}
+<div class="container">
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning">
+<button type="button" class="close" data-dismiss="alert">&times;</button>
+{{ message }}
+</div>
+{% endfor %}
+{% block page_content %}{% endblock %}
+</div>
+{% endblock %}
+</div>
+<div>
+    <h2 id="titulo">Añadir nuevo libro</h2>
+    <form name="form-name" method="post">
+        <div class="col-sm-3">
+            <label>
+            <input id="title" placeholder="title" type="text" name="title">
+        </label>
+        </div>
+        <div class="col-sm-3">
+            <label>
+            <input id="author" placeholder="autor" type="text" name="author">
+        </label>
+        </div>
+        <div class="col-sm-3">
+            <label>
+            <input id="year" placeholder="año de publicación" type="number" name="año">
+        </label>
+        </div>
+        <div class="col-sm-3">
+            <label>
+            <input id="lang" placeholder="lenguaje del libro" type="text" name="lenguaje">
+        </label>
+        </div>
+        <div class="col-sm-3">
+            <label>
+            <input id="country" placeholder="país de origen del autor" type="text" name="pais">
+        </label>
+        </div>
+        <div class="col-sm-4">
+            <label>
+            <input id="link" placeholder="link de wikipedia" type="url" name="link">
+        </label>
+        </div>
+        <div class="col-sm-4">
+            <input name="form-name" type="submit" value="añadir" class="button">
+        </div>
+        <div class="col-sm-1"></div>
+    </form>
+</div>
+<hr>
+<div class="container col-sm-12">
+  <table id="tabla" class="table-style-two">
+    <thead>
+      <tr>
+        <th>Titulo</th>
+        <th>Lenguaje del libro</th>
+        <th>Autor</th>
+        <th>País de origen del autor</th>
+        <th>Año de publicación</th>
+        <th>Link de wikipedia</th>
+        <th>Delete</th>
+        <th>id</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for i in range(0, len) %}
+      <form name="form-name" method="post">
+        <tr>
+        <td>{{Datos[i]['title']}}</td>
+        <td>{{Datos[i]['language']}}</td>
+        <td>{{Datos[i]['author']}}</td>
+        <td>{{Datos[i]['country']}}</td>
+        <td>{{Datos[i]['year']}}</td>
+        <td>{{Datos[i]['link']}}</td>
+        <td><button name="form-name" type="submit" value="delete"><svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"></path>
+  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"></path>
+        </svg></button></td>
+        <td>{{ i }}</td>
+      </tr>
+      </form>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<script>
+      function deleteRow(btn) {
+          let row = btn.parentNode.parentNode;
+          row.parentNode.removeChild(row);
+          let data = [];
+          let titulo = row.cells[0].innerHTML;
+          let autor = row.cells[2].innerHTML;
+          data.push(titulo, autor);
+
+          $.ajax({
+              type: "POST",
+              contentType: "application/json;charset=utf-8",
+              url: "/delete_book",
+              traditional: true,
+              data: JSON.stringify(data),
+              dataType: "json"
+          });
+      }
+  </script>
+<script>
+    let table = document.getElementById('tabla'), rIndex;
+    for (let i = 0; i < table.rows.length; i++) {
+        table.rows[i].onclick = function () {
+            rIndex = this.rowIndex;
+            console.log(rIndex)
+            document.getElementById("titulo").innerText = "Modificar libro";
+            document.getElementById("title").value = this.cells[0].innerHTML;
+            document.getElementById("lang").value = this.cells[1].innerHTML;
+            document.getElementById("author").value = this.cells[2].innerHTML;
+            document.getElementById("country").value = this.cells[3].innerHTML;
+            document.getElementById("year").value = this.cells[4].innerHTML;
+            document.getElementById("link").value = this.cells[5].innerHTML;
+        }
+    }
+</script>
+<hr>
+<footer>
+</footer>
+</body>
+</html>
